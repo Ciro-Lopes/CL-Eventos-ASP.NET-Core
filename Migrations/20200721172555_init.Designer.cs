@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace _net_core_api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200720205635_init")]
+    [Migration("20200721172555_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,38 @@ namespace _net_core_api.Migrations
                     b.HasKey("EventId");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("_net_core_api.model.Ticket", b =>
+                {
+                    b.Property<int>("TicketId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("PriceTicket")
+                        .HasColumnType("real");
+
+                    b.Property<int>("amountTicket")
+                        .HasColumnType("integer");
+
+                    b.HasKey("TicketId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("_net_core_api.model.Ticket", b =>
+                {
+                    b.HasOne("_net_core_api.model.Event", "Event")
+                        .WithMany("Tickets")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

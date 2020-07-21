@@ -1,18 +1,19 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using _net_core_api.model;
 using Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
-namespace _net_core_api.Controllers
+namespace Controllers
 {
     [ApiController]
-    [Route("Event")]
-    public class EventController : ControllerBase
+    [Route("Ticket")]
+    public class TicketController : ControllerBase
     {
         public DataContext Context { get; }
-        public EventController(DataContext context)
+
+        public TicketController(DataContext context)
         {
             this.Context = context;
         }
@@ -22,12 +23,11 @@ namespace _net_core_api.Controllers
         {
             try
             {
-                var results = await this.Context.Events.ToListAsync();
+                var results = await this.Context.Tickets.ToListAsync();
                 return Ok(results);
             }
             catch (System.Exception)
             {
-
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to request on database");
             }
         }
@@ -37,7 +37,7 @@ namespace _net_core_api.Controllers
         {
             try
             {
-                var results = await this.Context.Events.FirstOrDefaultAsync(x => x.EventId == id);
+                var results = await this.Context.Tickets.FirstOrDefaultAsync(x => x.TicketId == id);
                 return Ok(results);
             }
             catch (System.Exception)
@@ -47,11 +47,11 @@ namespace _net_core_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Event model)
+        public async Task<IActionResult> Create(Ticket model)
         {
             try
             {
-                this.Context.Events.Add(model);
+                this.Context.Tickets.Add(model);
                 await this.Context.SaveChangesAsync();
                 return Ok(model);
             }
@@ -62,26 +62,23 @@ namespace _net_core_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Event model, int id)
+        public async Task<IActionResult> Update(Ticket model, int id)
         {
             try
             {
-                var entity = await this.Context.Events.FirstOrDefaultAsync(x => x.EventId == id);
+                var entity = await this.Context.Tickets.FirstOrDefaultAsync(x => x.TicketId == id);
 
                 if (entity != null)
                 {
-                    entity.ImageEvent = model.ImageEvent;
-                    entity.NameEvent = model.NameEvent;
-                    entity.AddresEvent = model.AddresEvent;
-                    entity.DescriptionEvent = model.DescriptionEvent;
-                    entity.TypeEvent = model.TypeEvent;
+                    entity.PriceTicket = model.PriceTicket;
+                    entity.amountTicket = model.amountTicket;
 
                     await this.Context.SaveChangesAsync();
 
                     return Ok(entity);
                 }
 
-                return Ok("Event not found!");
+                return Ok("Ticket not found!");
             }
             catch (System.Exception)
             {
@@ -94,7 +91,7 @@ namespace _net_core_api.Controllers
         {
             try
             {
-                var entity = await this.Context.Events.FirstOrDefaultAsync(x => x.EventId == id);
+                var entity = await this.Context.Tickets.FirstOrDefaultAsync(x => x.TicketId == id);
 
                 if (entity != null)
                 {
@@ -103,11 +100,12 @@ namespace _net_core_api.Controllers
                     return Ok("Deleted with success!");
                 }
 
-                return Ok("Event not found!");
+                return Ok("Ticket not found!");
             }
             catch (System.Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to request on database");
+
+                throw;
             }
         }
     }

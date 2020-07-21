@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace _net_core_api.model
 {
     public class Event
@@ -8,5 +10,6 @@ namespace _net_core_api.model
         public string AddresEvent { get; set; }
         public string DescriptionEvent { get; set; }
         public string TypeEvent { get; set; }
+        public List<Ticket> Tickets { get; set; }
     }
 }
