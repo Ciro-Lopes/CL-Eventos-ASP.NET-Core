@@ -4,6 +4,7 @@ using _net_core_api.model;
 using Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using model;
 
 namespace Controllers
 {
@@ -104,8 +105,29 @@ namespace Controllers
             }
             catch (System.Exception)
             {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to request on database");
+            }
+        }
 
-                throw;
+        [HttpPut("Purchase/{id}")]
+        public async Task<IActionResult> GetEventTicket(int id)
+        {
+            try
+            {
+                var buyTicket = await this.Context.Tickets.FirstOrDefaultAsync(t => t.EventId == id);
+
+                if (buyTicket.amountTicket > 0)
+                {
+                    buyTicket.amountTicket = buyTicket.amountTicket - 1;
+                    await this.Context.SaveChangesAsync();
+                    return Ok("successful purchase!");
+                }
+
+                return Ok("Tickets Sold Out");
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to request on database");
             }
         }
     }
