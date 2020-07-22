@@ -23,25 +23,17 @@ namespace _net_core_api.Controllers
             try
             {
                 var results = await this.Context.Events.ToListAsync();
+
+                if (results.Count == 0)
+                {
+                    return Ok("Events not found!");
+                }
+
                 return Ok(results);
             }
             catch (System.Exception)
             {
 
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to request on database");
-            }
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            try
-            {
-                var results = await this.Context.Events.FirstOrDefaultAsync(x => x.EventId == id);
-                return Ok(results);
-            }
-            catch (System.Exception)
-            {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to request on database");
             }
         }
@@ -49,6 +41,12 @@ namespace _net_core_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Event model)
         {
+            if (model.ImageEvent == "" || model.NameEvent == "" || model.AddresEvent == "" ||
+               model.DescriptionEvent == "" || model.TypeEvent != "Empresa" && model.TypeEvent != "Universidade")
+            {
+                return Ok("the data was not filled in correctly");
+            }
+
             try
             {
                 this.Context.Events.Add(model);
@@ -61,27 +59,53 @@ namespace _net_core_api.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var results = await this.Context.Events.FirstOrDefaultAsync(x => x.EventId == id);
+
+                if (results == null)
+                {
+                    return Ok("Event not found!");
+                }
+
+                return Ok(results);
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to request on database");
+            }
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Event model, int id)
         {
+            if (model.ImageEvent == "" || model.NameEvent == "" || model.AddresEvent == "" ||
+               model.DescriptionEvent == "" || model.TypeEvent != "Empresa" && model.TypeEvent != "Universidade")
+            {
+                return Ok("the data was not filled in correctly");
+            }
+
             try
             {
                 var entity = await this.Context.Events.FirstOrDefaultAsync(x => x.EventId == id);
 
-                if (entity != null)
+                if (entity == null)
                 {
-                    entity.ImageEvent = model.ImageEvent;
-                    entity.NameEvent = model.NameEvent;
-                    entity.AddresEvent = model.AddresEvent;
-                    entity.DescriptionEvent = model.DescriptionEvent;
-                    entity.TypeEvent = model.TypeEvent;
-
-                    await this.Context.SaveChangesAsync();
-
-                    return Ok(entity);
+                    return Ok("Event not found!");
                 }
 
-                return Ok("Event not found!");
+                entity.ImageEvent = model.ImageEvent;
+                entity.NameEvent = model.NameEvent;
+                entity.AddresEvent = model.AddresEvent;
+                entity.DescriptionEvent = model.DescriptionEvent;
+                entity.TypeEvent = model.TypeEvent;
+
+                await this.Context.SaveChangesAsync();
+
+                return Ok(entity);
             }
             catch (System.Exception)
             {
@@ -96,14 +120,14 @@ namespace _net_core_api.Controllers
             {
                 var entity = await this.Context.Events.FirstOrDefaultAsync(x => x.EventId == id);
 
-                if (entity != null)
+                if (entity == null)
                 {
-                    var results = this.Context.Remove(entity);
-                    await this.Context.SaveChangesAsync();
-                    return Ok("Deleted with success!");
+                    return Ok("Event not found!");
                 }
 
-                return Ok("Event not found!");
+                var results = this.Context.Remove(entity);
+                await this.Context.SaveChangesAsync();
+                return Ok(entity);
             }
             catch (System.Exception)
             {
