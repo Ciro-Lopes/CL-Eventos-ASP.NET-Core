@@ -28,7 +28,7 @@ namespace _net_core_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(
-                x => x.UseNpgsql("Host=localhost;Database=cl_events;Username=postgres;Password=1234"));
+                x => x.UseNpgsql("Host=172.17.0.2;Database=cl_events;Username=postgres;Password=1234"));
             services.AddControllers();
         }
 
